@@ -1,4 +1,6 @@
 cd=: 15!:0
+typeof=: 3!:0 
+fltBk =: $ $ [: _1&fc ,
 
 NB. path of libblas
 3 : 0''
@@ -34,10 +36,34 @@ bmp =: 4 : 0
 )
 
 
+NB. *A fbmp B
+NB. -BLAS float multiply of A and B, returns C
+fbmp =: 4 : 0
+ 'd1 d2'=. $ x
+ 'd4 d3'=. $ y
+ if. d2=d4 do.
+   if. 8 = typeof x do.
+    A =. 1&fc"0 x
+   else.
+    A =. x
+   end.
+   if. 8 = typeof x do.
+    B =. 1&fc"0 y
+   else. 
+    B =. y
+   end.
+   Cm =. 1&fc (d1*d3) # 0
+   alpha =. 3.2-2.2
+   beta =.  2.2-2.2
+   Notrans =. 111
+   Colmaj =. 101
+   cmd =. LIBBLAS,' cblas_sgemm * x x x x x x f *f x *f x f * x'
+   Cf =.  13 pick cmd cd Colmaj;Notrans;Notrans;d1;d3;d2;alpha;A;d2;B;d1;beta;Cm;d1
+ else. 
+   smoutput 'rank error; d2=',(": d2),' d4=',(":d4),' should be the same'
+ end.
+ (d1,d3) $ _1&fc Cf
+)
+
+
 NB. 	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, dim1, dim3, dim2, alpha, &*A.begin(), dim1, &*B.begin(), dim2, beta, &*C.begin(), dim1);
-load'stats/base/random'
-a =. rand01 1000,1200
-b =. rand01 1200,1000
-tj =. 6!:2 'c=. a mp b'
-tb =. 6!:2 'c=. a bmp b'
-smoutput 'OpenBlas speedup over J: ', (": tj % tb), ' tj= ', (": tj),' tblas= ',":tb
