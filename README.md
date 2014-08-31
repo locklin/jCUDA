@@ -15,9 +15,9 @@ Org emacs list of nice things to put in here to make it useful;
   - [X] Build wrapper for sgemm [100%]
     - [X] Wrapper done
     - [X] Make it work with raw float arrays
-  - [ ] Port sgemm wrapper to CUDA [0%]
-    - [ ] Push double to float on GPU
-    - [ ] Pull float to double on GPU
+  - [-] Port sgemm wrapper to CUDA [50%]
+    - [X] Push double to float on GPU
+    - [X] Pull float to double from GPU
     - [ ] Pull intermediate float from GPU for multiple MM's
     - [ ] sgemm
   - [ ] Other CUDA functions [0%]
