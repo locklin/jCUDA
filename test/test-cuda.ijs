@@ -7,6 +7,7 @@ CDevReset ''
 CSetDev 0 NB. returns 0...
 
 'ptr err'=. CMalloc 4000 NB. error code 11
+'ptr err'=. CMalloc2 4000 NB. error code 11
 'err n'=.CGetCount '' NB. error code 11
 
 CBlasHandle ''  NB. no such function...

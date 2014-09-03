@@ -1,4 +1,6 @@
 cd=: 15!:0
+typeof=: 3!:0 
+fltBk =: (2 {. $) $ [: _1&fc ,
 
 NB. the cuda piece for sgemm should work the same as openBLAS
 NB. 
@@ -39,7 +41,7 @@ DEV2DEV =: 3
 NB. path of CUDA 
 3 : 0''
 if. UNAME-:'Linux' do.
-  CUDA =: '/usr/local/cuda-6.5/lib64/libcudart.so'
+  CUDA =: '/usr/local/cuda-6.5/lib64/stubs/libcuda.so'
   CUBLAS =: '/usr/local/cuda-6.5/lib64/libcublas.so'
 elseif. UNAME-:'Darwin' do.
   'platform not supported' 13!:8[10
@@ -51,53 +53,31 @@ end.
 )
 
 
-CSetDev=: 3 : 0
- cmd=. CUDA, ' cudaSetDevice x x'
- 0 pick cmd cd y
-)
-
-CGetDevProp =: 3 : 0
- cmd=. CUDA, ' cudaGetDeviceProperties * * x'
- 
-)
-
 CMalloc=: 3 : 0
-  ptr =. 0
-  cmd=. CUDA, ' cudaMalloc * x x'
-  err=. 0 pick cmd cd ptr;y
+  cmd=. CUDA, ' cuMemAlloc x x'
+  err=. 0 pick cmd cd y
   ptr;err
 )
 
-
-CDevReset=: 3 : 0
-  cmd=. CUDA, ' cudaDeviceReset x'
-  err=. cmd cd ''
+CFree=: 3 : 0
+ cmd=. CUDA,' cuMemFree x x'
+ err=. 0 pick cmd cd y
+ err
 )
 
 
+CMemCpy=: 3 : 0
+ sz=. 4 * */ $ y
+ 
+ cmh2 =. CUDA, ' cuMemcpyHtoD * * x'
+ cmd2 =. CUDA, ' cuMemcpyDtoH * * x'
 
-CBlasHandle =: 3 : 0
-  ptr=.0
-  cmd=. CUBLAS, ' cublasCreate x *'
-  0 pick cmd cd ptr
-)
-
-CGetCount =: 3 : 0
- a=. 0
- cmd=. CUDA,' cudaGetDeviceCount x x'
- err=.0 pick cmd cd;a
- err;a
-)
-
-CFree =: 3 : 0
- cmd=. CUDA, ' cudaFree x *'
- 0 pick cmd cd y
 )
 
 CMemCpy =: 3 : 0
  'data ptr kind' =. y
   count =. */ $data
- cmd=. CUDA, ' cudaMemcpy x * *'
+ cmd=. CUDA, ' cuMemcpy x * *'
  0 pick cmd cd ptr;data;count;kind
 )
 
@@ -105,7 +85,7 @@ CMemCpy =: 3 : 0
 
 
 
-
+NB. https://github.com/jakedouglas/cuda-ffi/tree/master/lib/cuda
 
 NB. probably don't need these:
 NB. cudaMallocPitch?
@@ -113,3 +93,45 @@ NB. cudaThreadSynchronize?
 NB. cudaThreadSetLimit ? 
 NB. cudaMemcpy2d?
 NB. These may require some C hooks; check the Torch7 source for inspiration
+
+
+
+NB. these seem to be C++ versions or something.
+NB.  CUDA =: '/usr/local/cuda-6.5/lib64/libcudart.so'
+
+NB. CSetDev=: 3 : 0
+NB.  cmd=. CUDA, ' cudaSetDevice x x'
+NB.  0 pick cmd cd y
+NB. )
+
+NB. CGetDevProp =: 3 : 0
+NB.  cmd=. CUDA, ' cudaGetDeviceProperties * * x'
+ 
+NB. )
+
+
+
+NB. CDevReset=: 3 : 0
+NB.   cmd=. CUDA, ' cudaDeviceReset x'
+NB.   err=. cmd cd ''
+NB. )
+
+
+
+NB. CBlasHandle =: 3 : 0
+NB.   ptr=.0
+NB.   cmd=. CUBLAS, ' cublasCreate x *'
+NB.   0 pick cmd cd ptr
+NB. )
+
+NB. CGetCount =: 3 : 0
+NB.  a=. 0
+NB.  cmd=. CUDA,' cudaGetDeviceCount x x'
+NB.  err=.0 pick cmd cd;a
+NB.  err;a
+NB. )
+
+NB. CFree =: 3 : 0
+NB.  cmd=. CUDA, ' cudaFree x *'
+NB.  0 pick cmd cd y
+NB. )
