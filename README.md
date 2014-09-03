@@ -3,22 +3,22 @@ jCUDA
 
 experiments with providing L3 BLAS and CUDA for J for array math speedup
 
-First step completed: dgemm
+Step completed: dgemm, sgemm
 
 Org emacs list of nice things to put in here to make it useful;
 
-** TODO jCUDA [20%]
-  - [-] Try dgemm BLAS port [66%]
+** TODO jCUDA [40%]
+  - [X] Try dgemm BLAS port [100%]
     - [X] Does it work?
     - [X] simple test script
-    - [ ] Make it work with vectors
+    - [X] Make it work with vectors
   - [X] Build wrapper for sgemm [100%]
     - [X] Wrapper done
     - [X] Make it work with raw float arrays
-  - [-] Port sgemm wrapper to CUDA [50%]
-    - [X] Push double to float on GPU
-    - [X] Pull float to double from GPU
-    - [ ] Pull intermediate float from GPU for multiple MM's
+    - [X] Add to test script
+  - [ ] Port sgemm wrapper to CUDA [0%]
+    - [ ] CMalloc/Free
+    - [ ] CMmemcpy, host2dev,dev2host,dev2dev
     - [ ] sgemm
   - [ ] Other CUDA functions [0%]
     - [ ] "log", "log1p", "exp","cos",  "sin",  "sqrt","ceil", "floor","abs"

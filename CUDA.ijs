@@ -39,8 +39,8 @@ DEV2DEV =: 3
 NB. path of CUDA 
 3 : 0''
 if. UNAME-:'Linux' do.
-  LCUDA =: '/usr/local/cuda-6.5/lib64/libcudart.so'
-  CUDABLAS =: '/usr/local/cuda-6.5/lib64/libcublas.so'
+  CUDA =: '/usr/local/cuda-6.5/lib64/libcudart.so'
+  CUBLAS =: '/usr/local/cuda-6.5/lib64/libcublas.so'
 elseif. UNAME-:'Darwin' do.
   'platform not supported' 13!:8[10
 elseif. UNAME-: 'Win' do.
@@ -50,22 +50,54 @@ elseif. do.
 end.
 )
 
+
+CSetDev=: 3 : 0
+ cmd=. CUDA, ' cudaSetDevice x x'
+ 0 pick cmd cd y
+)
+
+CGetDevProp =: 3 : 0
+ cmd=. CUDA, ' cudaGetDeviceProperties * * x'
+ 
+)
+
 CMalloc=: 3 : 0
   ptr =. 0
-  cmd=. LCUDA, ' cudaMalloc x * x'
+  cmd=. CUDA, ' cudaMalloc * x x'
   err=. 0 pick cmd cd ptr;y
   ptr;err
 )
 
+
+CDevReset=: 3 : 0
+  cmd=. CUDA, ' cudaDeviceReset x'
+  err=. cmd cd ''
+)
+
+
+
+CBlasHandle =: 3 : 0
+  ptr=.0
+  cmd=. CUBLAS, ' cublasCreate x *'
+  0 pick cmd cd ptr
+)
+
+CGetCount =: 3 : 0
+ a=. 0
+ cmd=. CUDA,' cudaGetDeviceCount x x'
+ err=.0 pick cmd cd;a
+ err;a
+)
+
 CFree =: 3 : 0
- cmd=. LCUDA, ' cudaFree x *'
+ cmd=. CUDA, ' cudaFree x *'
  0 pick cmd cd y
 )
 
 CMemCpy =: 3 : 0
  'data ptr kind' =. y
   count =. */ $data
- cmd=. LCUDA, ' cudaMemcpy x * *'
+ cmd=. CUDA, ' cudaMemcpy x * *'
  0 pick cmd cd ptr;data;count;kind
 )
 
