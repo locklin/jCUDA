@@ -36,7 +36,7 @@ bmp =: 4 : 0
  else.
    smoutput 'rank error; d2=',(": d2),' d4=',(":d4),' should be the same'
  end.
- C
+ ,^:(sx +. sy ) C      NB. to make consistent with +/ . * rank output 
 )
 
 
