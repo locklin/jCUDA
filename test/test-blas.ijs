@@ -23,6 +23,13 @@ setmul=: 3 : 0
 ''
 )
 
+setmul 5;4;4;1
+blasck''
+fblasck ''
+
+setmul 1;5;5;6
+blasck''
+fblasck ''
 
 setmul 5;4;4;3
 blasck ''
