@@ -41,8 +41,9 @@ DEV2DEV =: 3
 NB. path of CUDA 
 3 : 0''
 if. UNAME-:'Linux' do.
-  CUDA =: '/usr/local/cuda-6.5/lib64/stubs/libcuda.so'
+  CUDART =: '/usr/local/cuda-6.5/lib64/libcudart.so.6.5.14' NB.libcudart.so' 
   CUBLAS =: '/usr/local/cuda-6.5/lib64/libcublas.so'
+  CUDA=: '/home/scott/src/batchCUBLAS/libcb.so'
 elseif. UNAME-:'Darwin' do.
   'platform not supported' 13!:8[10
 elseif. UNAME-: 'Win' do.
@@ -52,37 +53,53 @@ elseif. do.
 end.
 )
 
+CDevRes=: 3 : 0
+ cmd=. CUDART,' cudaDeviceReset i'
+ >cmd cd ''
+)
+
+CGetDevMem=: 3 : 0
+ cmd =. CUDA,' getDeviceMemory x'
+ >cmd cd ''
+)
+
+
+CGetDevV=: 3 : 0
+ cmd =. CUDA,' getDeviceVersion x'
+ >cmd cd ''
+)
+
 
 CMalloc=: 3 : 0
-  cmd=. CUDA, ' cuMemAlloc x x'
-  err=. 0 pick cmd cd y
-  ptr;err
+  cmd=. CUDA, ' MyCUDAMalloc i i'
+  0 pick cmd cd y
 )
 
 CFree=: 3 : 0
- cmd=. CUDA,' cuMemFree x x'
- err=. 0 pick cmd cd y
- err
+ cmd=. CUDA,' CUDAFree i *'
+ 0 pick cmd cd y
+)
+
+CCopy=: 3 : 0
+ 'host dev sz kind'=.y
+ cmd=. CUDA,' CUDACopy i * * i i'
+ 0 pick cmd cd host;dev;sz;kind  NB. there is probably a reason for making this explicit
 )
 
 
-CMemCpy=: 3 : 0
- sz=. 4 * */ $ y
- 
- cmh2 =. CUDA, ' cuMemcpyHtoD * * x'
- cmd2 =. CUDA, ' cuMemcpyDtoH * * x'
-
-)
-
-CMemCpy =: 3 : 0
- 'data ptr kind' =. y
-  count =. */ $data
- cmd=. CUDA, ' cuMemcpy x * *'
- 0 pick cmd cd ptr;data;count;kind
+CCkErr=: 3 : 0
+ cmd=. CUDART, ' cudaGetErrorString * x'
+ sm=. 0 pick cmd cd y
+ if. (100 > y) +. (sm>0) do.
+  memr sm,0,_1
+ else. 
+  smountput 'not a cuda error value, err= ', :" y
+ end.
 )
 
 
 
+NB. cublasCreate handle for cublas
 
 
 NB. https://github.com/jakedouglas/cuda-ffi/tree/master/lib/cuda
@@ -96,42 +113,67 @@ NB. These may require some C hooks; check the Torch7 source for inspiration
 
 
 
-NB. these seem to be C++ versions or something.
-NB.  CUDA =: '/usr/local/cuda-6.5/lib64/libcudart.so'
 
 NB. CSetDev=: 3 : 0
-NB.  cmd=. CUDA, ' cudaSetDevice x x'
+NB.  cmd=. CUDART, ' cudaSetDevice x x'
 NB.  0 pick cmd cd y
 NB. )
 
 NB. CGetDevProp =: 3 : 0
-NB.  cmd=. CUDA, ' cudaGetDeviceProperties * * x'
+NB.  cmd=. CUDART, ' cudaGetDeviceProperties * * x'
  
 NB. )
 
 
 
 NB. CDevReset=: 3 : 0
-NB.   cmd=. CUDA, ' cudaDeviceReset x'
+NB.   cmd=. CUDART, ' cudaDeviceReset x'
 NB.   err=. cmd cd ''
 NB. )
 
 
 
-NB. CBlasHandle =: 3 : 0
-NB.   ptr=.0
-NB.   cmd=. CUBLAS, ' cublasCreate x *'
-NB.   0 pick cmd cd ptr
-NB. )
-
-NB. CGetCount =: 3 : 0
-NB.  a=. 0
-NB.  cmd=. CUDA,' cudaGetDeviceCount x x'
-NB.  err=.0 pick cmd cd;a
-NB.  err;a
-NB. )
-
 NB. CFree =: 3 : 0
-NB.  cmd=. CUDA, ' cudaFree x *'
+NB.  cmd=. CUDART, ' cudaFree x *'
 NB.  0 pick cmd cd y
+NB. )
+
+
+
+NB. CSetDev=: 3 : 0
+NB.  cmd=. CUDART,' cudaSetDevice i x'
+NB.  err=. 0 pick cmd cd 0
+NB. )
+
+
+
+NB. CMalloc=: 3 : 0
+NB.   ptr=. <0
+NB.   cmd=. CUDART, ' cudaMalloc x x'
+NB.   err=. 0 pick cmd cd ptr
+NB.   ptr;err
+NB. )
+
+
+NB. CVer=: 3 : 0
+NB. cmd
+NB. cuDeviceGetVersion
+NB. )
+
+
+NB. CFreeHst=: 3 : 0
+NB.  cmd=. CUDART,' cudaFreeHost x x'
+NB.  err=. 0 pick cmd cd 0
+NB.  CCkErr err
+NB. )
+
+NB. CGetDevCt=: 3 : 0
+NB.  ct=. 99
+NB.  cmd=. CUDART,' cudaGetDeviceCount i i'
+NB.  err=. 0 pick cmd cd ct
+NB.  if. 0= err do.
+NB.   smoutput 'Number of devices=',": ct
+NB.  else.
+NB.   CCkErr err
+NB.  end.
 NB. )

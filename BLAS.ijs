@@ -28,9 +28,9 @@ bmp =: 4 : 0
  if. d2=d4 do.
    C =. (d1,d3) $ 2.2-2.2
    alpha =. 3.2-2.2
-   Notrans =. 111
    beta =. 2.2-2.2
-    Colmaj =. 101  
+   Notrans =. 111
+   Colmaj =. 101  
    cmd =. LIBBLAS,' cblas_dgemm * x x x x x x d *d x *d x d *d x'
    cmd cd Colmaj;Notrans;Notrans;d1;d3;d2;alpha;x;d2;y;d3;beta;C;d3
  else.
