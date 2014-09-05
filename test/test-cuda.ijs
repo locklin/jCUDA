@@ -3,9 +3,19 @@ load'stats/base/random'
 load'/home/scott/src/jCUDA/CUDA.ijs'
 
 CGetDevMem''
-CPrintDevV''
+CGetDevV''
 a=. CMalloc 8
+CFree a
 
+a=. CMalloc 4
+zx=. 1&fc 1.1
+err=. CCopy a;zx;4;1
+NB. the cuckorachas go in but they don't come out....
+zy=. mema 4
+err=. CCopy a;zy;4;2
+err=. CCopyOut a;zy;4;2
+
+CFree a
 
 
 

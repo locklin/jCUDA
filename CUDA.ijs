@@ -41,7 +41,7 @@ DEV2DEV =: 3
 NB. path of CUDA 
 3 : 0''
 if. UNAME-:'Linux' do.
-  CUDART =: '/usr/local/cuda-6.5/lib64/libcudart.so.6.5.14' NB.libcudart.so' 
+  CUDART =: '/usr/local/cuda-6.5/lib64/libcudart.so' 
   CUBLAS =: '/usr/local/cuda-6.5/lib64/libcublas.so'
   CUDA=: '/home/scott/src/batchCUBLAS/libcb.so'
 elseif. UNAME-:'Darwin' do.
@@ -71,19 +71,25 @@ CGetDevV=: 3 : 0
 
 
 CMalloc=: 3 : 0
-  cmd=. CUDA, ' MyCUDAMalloc i i'
+  cmd=. CUDA, ' MyCUDAMalloc x x'
   0 pick cmd cd y
 )
 
 CFree=: 3 : 0
- cmd=. CUDA,' CUDAFree i *'
+ cmd=. CUDA,' MyCUDAFree x x'
  0 pick cmd cd y
 )
 
 CCopy=: 3 : 0
  'host dev sz kind'=.y
- cmd=. CUDA,' CUDACopy i * * i i'
+ cmd=. CUDA,' MyCUDACopy x x * x x'
  0 pick cmd cd host;dev;sz;kind  NB. there is probably a reason for making this explicit
+)
+
+CCopyOut=: 3 : 0
+ 'host dev sz kind'=.y
+ cmd=. CUDA,' MyCUDACopy x x x x x'
+ 0 pick cmd cd host;dev;sz;2  
 )
 
 
